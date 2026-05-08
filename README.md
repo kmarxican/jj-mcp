@@ -132,6 +132,41 @@ const tools = await client.listTools();
 | `jj_bookmark_list` | List bookmarks |
 | `jj_bookmark_create` | Create bookmark |
 | `jj_bookmark_delete` | Delete bookmark |
+| `jj_squash` | Combine commits |
+| `jj_split` | Split a commit |
+| `jj_undo` | Undo last operation |
+| `jj_redo` | Redo undone operation |
+| `jj_restore` | Restore files from revision |
+| `jj_edit` | Edit a specific revision |
+| `jj_next` | Move to next child revision |
+| `jj_prev` | Move to previous parent revision |
+
+## Available Resources
+
+Resources provide read-only access to repository state without explicit tool calls.
+
+| Resource URI | Description | Parameters |
+|--------------|-------------|------------|
+| `jj://status` | Repository status | `cwd` (optional) |
+| `jj://log/recent` | Recent commits | `cwd` (optional), `limit` (default: 10) |
+| `jj://bookmarks` | List all bookmarks | `cwd` (optional) |
+| `jj://config` | Repository configuration | `cwd` (optional) |
+
+### Using Resources
+
+Resources can be read with URL parameters:
+
+```javascript
+// Read status with custom working directory
+const { contents } = await client.readResource({
+  uri: "jj://status?cwd=/path/to/repo"
+});
+
+// Read recent commits with custom limit
+const { contents } = await client.readResource({
+  uri: "jj://log/recent?cwd=/path/to/repo&limit=20"
+});
+```
 
 ## Revset Expressions
 

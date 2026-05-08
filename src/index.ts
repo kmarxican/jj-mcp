@@ -5,6 +5,8 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
+  ListResourcesRequestSchema,
+  ReadResourceRequestSchema,
   type CallToolRequest,
 } from "@modelcontextprotocol/sdk/types.js";
 
@@ -32,6 +34,7 @@ import {
   jjEdit,
   jjNext,
   jjPrev,
+  runJj,
 } from "./jj.js";
 
 const server = new Server(
@@ -42,6 +45,7 @@ const server = new Server(
   {
     capabilities: {
       tools: {},
+      resources: {},
     },
   }
 );
@@ -249,6 +253,117 @@ server.setRequestHandler(CallToolRequestSchema, async (request: CallToolRequest)
         },
       ],
       isError: true,
+    };
+  }
+});
+
+// Resource handlers
+server.setRequestHandler(ListResourcesRequestSchema, async () => {
+  const resources = [
+    {
+      uri: "jj://status",
+      name: "Repository Status",
+      description: "Current working copy status and changes",
+      mimeType: "text/plain"
+    },
+    {
+      uri: "jj://log/recent",
+      name: "Recent Commits",
+      description: "Recent commit history (default limit: 10)",
+      mimeType: "text/plain"
+    },
+    {
+      uri: "jj://bookmarks",
+      name: "Bookmarks",
+      description: "List of all bookmarks (branches)",
+      mimeType: "text/plain"
+    },
+    {
+      uri: "jj://config",
+      name: "Configuration",
+      description: "Repository configuration settings",
+      mimeType: "text/plain"
+    }
+  ];
+
+  return { resources };
+});
+
+server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
+  const { uri } = request.params;
+  
+  // Extract cwd from URI if provided (e.g., "jj://status?cwd=/path/to/repo")
+  const url = new URL(uri, "jj://");
+  const cwd = url.searchParams.get("cwd") || undefined;
+
+  try {
+    let result;
+
+    switch (uri.split("?")[0]) {
+      case "jj://status":
+        result = jjStatus(cwd);
+        break;
+
+      case "jj://log/recent":
+        // Get limit from URL params, default to 10
+        const limit = url.searchParams.get("limit") 
+          ? parseInt(url.searchParams.get("limit")!, 10) 
+          : 10;
+        result = jjLog(undefined, limit, cwd);
+        break;
+
+      case "jj://bookmarks":
+        result = jjBookmarkList(cwd);
+        break;
+
+      case "jj://config":
+        result = runJj(["config", "list"], cwd);
+        break;
+
+      default:
+        return {
+          contents: [
+            {
+              uri,
+              text: `Unknown resource: ${uri}`,
+            },
+          ],
+        };
+    }
+
+    if (result.success) {
+      const text = result.data
+        ? typeof result.data === "string"
+          ? result.data
+          : JSON.stringify(result.data, null, 2)
+        : "Success";
+      
+      return {
+        contents: [
+          {
+            uri,
+            text,
+          },
+        ],
+      };
+    } else {
+      return {
+        contents: [
+          {
+            uri,
+            text: `Error reading resource: ${result.error}`,
+          },
+        ],
+      };
+    }
+  } catch (error) {
+    return {
+      contents: [
+        {
+          uri,
+          text: `Error reading resource ${uri}: ${error}`,
+        },
+      ],
     };
   }
 });
