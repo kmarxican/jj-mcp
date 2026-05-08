@@ -40,6 +40,17 @@ import {
   jjGitImport,
   jjGitExport,
   jjGitClone,
+  jjObslog,
+  jjOpLog,
+  jjWorkspaceList,
+  jjWorkspaceAdd,
+  jjConfigGet,
+  jjConfigSet,
+  jjBisect,
+  jjFileShow,
+  jjTagList,
+  jjTagCreate,
+  jjSparse,
 } from "./jj.js";
 
 const server = new Server(
@@ -236,6 +247,80 @@ server.setRequestHandler(CallToolRequestSchema, async (request: CallToolRequest)
         result = jjGitClone(
           args?.url as string,
           args?.destination as string | undefined,
+          cwd
+        );
+        break;
+
+      case "jj_obslog":
+        result = jjObslog(
+          args?.revset as string | undefined,
+          args?.limit as number | undefined,
+          cwd
+        );
+        break;
+
+      case "jj_op_log":
+        result = jjOpLog(args?.limit as number | undefined, cwd);
+        break;
+
+      case "jj_workspace_list":
+        result = jjWorkspaceList(cwd);
+        break;
+
+      case "jj_workspace_add":
+        result = jjWorkspaceAdd(
+          args?.name as string,
+          args?.revision as string | undefined,
+          cwd
+        );
+        break;
+
+      case "jj_config_get":
+        result = jjConfigGet(args?.name as string, cwd);
+        break;
+
+      case "jj_config_set":
+        result = jjConfigSet(
+          args?.name as string,
+          args?.value as string,
+          cwd
+        );
+        break;
+
+      case "jj_bisect":
+        result = jjBisect(
+          args?.good as string | undefined,
+          args?.bad as string | undefined,
+          args?.command as string | undefined,
+          cwd
+        );
+        break;
+
+      case "jj_file_show":
+        result = jjFileShow(
+          args?.path as string,
+          args?.revision as string | undefined,
+          cwd
+        );
+        break;
+
+      case "jj_tag_list":
+        result = jjTagList(cwd);
+        break;
+
+      case "jj_tag_create":
+        result = jjTagCreate(
+          args?.name as string,
+          args?.revision as string | undefined,
+          cwd
+        );
+        break;
+
+      case "jj_sparse":
+        result = jjSparse(
+          args?.add as string[] | undefined,
+          args?.remove as string[] | undefined,
+          args?.list as boolean | undefined,
           cwd
         );
         break;

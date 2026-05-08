@@ -145,6 +145,17 @@ const tools = await client.listTools();
 | `jj_git_import` | Import changes from Git into jj |
 | `jj_git_export` | Export jj changes to Git |
 | `jj_git_clone` | Clone Git repository and initialize jj |
+| `jj_obslog` | Show operation log (history of mutations) |
+| `jj_op_log` | Show detailed operation log |
+| `jj_workspace_list` | List all workspaces |
+| `jj_workspace_add` | Add new workspace |
+| `jj_config_get` | Get configuration value |
+| `jj_config_set` | Set configuration value |
+| `jj_bisect` | Binary search for regressions |
+| `jj_file_show` | Show file contents at revision |
+| `jj_tag_list` | List all tags |
+| `jj_tag_create` | Create new tag |
+| `jj_sparse` | Manage sparse checkout patterns |
 
 ## Available Resources
 
@@ -232,6 +243,91 @@ await client.callTool({
     remote: "origin",
     bookmark: "main",
     cwd: "/path/to/my-repo"
+  }
+});
+```
+
+## Advanced Tools
+
+The jj-mcp server provides advanced tools for repository management, debugging, and configuration.
+
+### Operation History
+
+| Tool | Description | Example |
+|------|-------------|---------|
+| `jj_obslog` | Show operation log (history of mutations) | `jj_obslog({limit: 10, revset: "@"})` |
+| `jj_op_log` | Show detailed operation log | `jj_op_log({limit: 5})` |
+
+### Workspace Management
+
+| Tool | Description | Example |
+|------|-------------|---------|
+| `jj_workspace_list` | List all workspaces | `jj_workspace_list()` |
+| `jj_workspace_add` | Add new workspace | `jj_workspace_add({name: "feature-x", revision: "main"})` |
+
+### Configuration
+
+| Tool | Description | Example |
+|------|-------------|---------|
+| `jj_config_get` | Get configuration value | `jj_config_get({name: "user.name"})` |
+| `jj_config_set` | Set configuration value | `jj_config_set({name: "user.email", value: "user@example.com"})` |
+
+### Debugging & Analysis
+
+| Tool | Description | Example |
+|------|-------------|---------|
+| `jj_bisect` | Binary search for regressions | `jj_bisect({good: "v1.0", bad: "main"})` |
+| `jj_file_show` | Show file contents at revision | `jj_file_show({path: "README.md", revision: "v1.0"})` |
+
+### Tags & Sparse Checkout
+
+| Tool | Description | Example |
+|------|-------------|---------|
+| `jj_tag_list` | List all tags | `jj_tag_list()` |
+| `jj_tag_create` | Create new tag | `jj_tag_create({name: "v1.0", revision: "main"})` |
+| `jj_sparse` | Manage sparse checkout patterns | `jj_sparse({add: ["src/*"], list: true})` |
+
+### Advanced Workflow Example
+
+```javascript
+// Analyze recent operations
+const obslog = await client.callTool({
+  name: "jj_obslog",
+  arguments: { limit: 5, cwd: "/path/to/repo" }
+});
+
+// Get current configuration
+const userName = await client.callTool({
+  name: "jj_config_get",
+  arguments: { name: "user.name", cwd: "/path/to/repo" }
+});
+
+// Show file at previous revision
+const oldFile = await client.callTool({
+  name: "jj_file_show",
+  arguments: {
+    path: "config.json",
+    revision: "v1.0",
+    cwd: "/path/to/repo"
+  }
+});
+
+// Create a new workspace for feature development
+await client.callTool({
+  name: "jj_workspace_add",
+  arguments: {
+    name: "feature-branch",
+    revision: "main",
+    cwd: "/path/to/repo"
+  }
+});
+
+// Tag current state
+await client.callTool({
+  name: "jj_tag_create",
+  arguments: {
+    name: "checkpoint",
+    cwd: "/path/to/repo"
   }
 });
 ```

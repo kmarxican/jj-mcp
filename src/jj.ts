@@ -305,3 +305,109 @@ export function jjGitClone(
   if (destination) args.push(destination);
   return runJj(args, cwd);
 }
+
+export function jjObslog(
+  revset?: string,
+  limit?: number,
+  cwd?: string
+): JjResult {
+  const args = ["obslog"];
+  if (limit) args.push("--limit", limit.toString());
+  if (revset) args.push("-r", revset);
+  return runJj(args, cwd);
+}
+
+export function jjOpLog(
+  limit?: number,
+  cwd?: string
+): JjResult {
+  const args = ["op", "log"];
+  if (limit) args.push("--limit", limit.toString());
+  return runJj(args, cwd);
+}
+
+export function jjWorkspaceList(cwd?: string): JjResult {
+  return runJj(["workspace", "list"], cwd);
+}
+
+export function jjWorkspaceAdd(
+  name: string,
+  revision?: string,
+  cwd?: string
+): JjResult {
+  const args = ["workspace", "add", "--name", name];
+  if (revision) args.push("-r", revision);
+  return runJj(args, cwd);
+}
+
+export function jjConfigGet(
+  name: string,
+  cwd?: string
+): JjResult {
+  return runJj(["config", "get", name], cwd);
+}
+
+export function jjConfigSet(
+  name: string,
+  value: string,
+  cwd?: string
+): JjResult {
+  return runJj(["config", "set", name, value], cwd);
+}
+
+export function jjBisect(
+  good?: string,
+  bad?: string,
+  command?: string,
+  cwd?: string
+): JjResult {
+  const args = ["bisect"];
+  if (good) args.push("--good", good);
+  if (bad) args.push("--bad", bad);
+  if (command) args.push("--script", command);
+  return runJj(args, cwd);
+}
+
+export function jjFileShow(
+  path: string,
+  revision?: string,
+  cwd?: string
+): JjResult {
+  const args = ["file", "show", path];
+  if (revision) args.push("-r", revision);
+  return runJj(args, cwd);
+}
+
+export function jjTagList(cwd?: string): JjResult {
+  return runJj(["tag", "list"], cwd);
+}
+
+export function jjTagCreate(
+  name: string,
+  revision?: string,
+  cwd?: string
+): JjResult {
+  const args = ["tag", "create", name];
+  if (revision) args.push("-r", revision);
+  return runJj(args, cwd);
+}
+
+export function jjSparse(
+  add?: string[],
+  remove?: string[],
+  list?: boolean,
+  cwd?: string
+): JjResult {
+  const args = ["sparse"];
+  if (list) {
+    args.push("--list");
+  } else {
+    if (add && add.length > 0) {
+      args.push("--add", ...add);
+    }
+    if (remove && remove.length > 0) {
+      args.push("--remove", ...remove);
+    }
+  }
+  return runJj(args, cwd);
+}
