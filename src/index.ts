@@ -35,6 +35,11 @@ import {
   jjNext,
   jjPrev,
   runJj,
+  jjGitFetch,
+  jjGitPush,
+  jjGitImport,
+  jjGitExport,
+  jjGitClone,
 } from "./jj.js";
 
 const server = new Server(
@@ -205,6 +210,34 @@ server.setRequestHandler(CallToolRequestSchema, async (request: CallToolRequest)
 
       case "jj_prev":
         result = jjPrev(args?.amount as number | undefined, cwd);
+        break;
+
+      case "jj_git_fetch":
+        result = jjGitFetch(args?.remote as string | undefined, cwd);
+        break;
+
+      case "jj_git_push":
+        result = jjGitPush(
+          args?.remote as string | undefined,
+          args?.bookmark as string | undefined,
+          cwd
+        );
+        break;
+
+      case "jj_git_import":
+        result = jjGitImport(cwd);
+        break;
+
+      case "jj_git_export":
+        result = jjGitExport(cwd);
+        break;
+
+      case "jj_git_clone":
+        result = jjGitClone(
+          args?.url as string,
+          args?.destination as string | undefined,
+          cwd
+        );
         break;
 
       default:

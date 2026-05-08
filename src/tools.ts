@@ -403,5 +403,95 @@ export const tools: Tool[] = [
       },
       required: []
     }
+  },
+  {
+    name: "jj_git_fetch",
+    description: "Fetch changes from Git remotes",
+    inputSchema: {
+      type: "object",
+      properties: {
+        remote: {
+          type: "string",
+          description: "Remote name (default: origin)"
+        },
+        cwd: {
+          type: "string",
+          description: "Working directory (optional)"
+        }
+      },
+      required: []
+    }
+  },
+  {
+    name: "jj_git_push",
+    description: "Push changes to Git remotes",
+    inputSchema: {
+      type: "object",
+      properties: {
+        remote: {
+          type: "string",
+          description: "Remote name (default: origin)"
+        },
+        bookmark: {
+          type: "string",
+          description: "Bookmark to push (default: all bookmarks)"
+        },
+        cwd: {
+          type: "string",
+          description: "Working directory (optional)"
+        }
+      },
+      required: []
+    }
+  },
+  {
+    name: "jj_git_import",
+    description: "Import changes from Git into jj",
+    inputSchema: {
+      type: "object",
+      properties: {
+        cwd: {
+          type: "string",
+          description: "Working directory (optional)"
+        }
+      },
+      required: []
+    }
+  },
+  {
+    name: "jj_git_export",
+    description: "Export jj changes to Git",
+    inputSchema: {
+      type: "object",
+      properties: {
+        cwd: {
+          type: "string",
+          description: "Working directory (optional)"
+        }
+      },
+      required: []
+    }
+  },
+  {
+    name: "jj_git_clone",
+    description: "Clone a Git repository and initialize jj",
+    inputSchema: {
+      type: "object",
+      properties: {
+        url: {
+          type: "string",
+          description: "Git repository URL to clone"
+        },
+        destination: {
+          type: "string",
+          description: "Destination directory (optional)"
+        },
+        cwd: {
+          type: "string",
+          description: "Working directory (optional)"
+        }
+      },
+      required: ["url"]
+    }
   }
 ];

@@ -140,6 +140,11 @@ const tools = await client.listTools();
 | `jj_edit` | Edit a specific revision |
 | `jj_next` | Move to next child revision |
 | `jj_prev` | Move to previous parent revision |
+| `jj_git_fetch` | Fetch changes from Git remotes |
+| `jj_git_push` | Push changes to Git remotes |
+| `jj_git_import` | Import changes from Git into jj |
+| `jj_git_export` | Export jj changes to Git |
+| `jj_git_clone` | Clone Git repository and initialize jj |
 
 ## Available Resources
 
@@ -165,6 +170,69 @@ const { contents } = await client.readResource({
 // Read recent commits with custom limit
 const { contents } = await client.readResource({
   uri: "jj://log/recent?cwd=/path/to/repo&limit=20"
+});
+```
+
+## Git Integration
+
+The jj-mcp server provides Git integration tools for colocated repositories (where jj and Git share the same directory).
+
+### Git Tools
+
+| Tool | Description | Example |
+|------|-------------|---------|
+| `jj_git_fetch` | Fetch from Git remotes | `jj_git_fetch({remote: "origin"})` |
+| `jj_git_push` | Push to Git remotes | `jj_git_push({remote: "origin", bookmark: "main"})` |
+| `jj_git_import` | Import Git changes into jj | `jj_git_import()` |
+| `jj_git_export` | Export jj changes to Git | `jj_git_export()` |
+| `jj_git_clone` | Clone and initialize jj | `jj_git_clone({url: "https://github.com/user/repo.git"})` |
+
+### Git Workflow Example
+
+```javascript
+// Clone a repository with jj
+await client.callTool({
+  name: "jj_git_clone",
+  arguments: {
+    url: "https://github.com/user/repo.git",
+    destination: "my-repo"
+  }
+});
+
+// Fetch latest changes
+await client.callTool({
+  name: "jj_git_fetch",
+  arguments: { cwd: "/path/to/my-repo" }
+});
+
+// Import Git changes into jj
+await client.callTool({
+  name: "jj_git_import", 
+  arguments: { cwd: "/path/to/my-repo" }
+});
+
+// Make changes with jj tools...
+await client.callTool({
+  name: "jj_commit",
+  arguments: {
+    message: "My changes",
+    cwd: "/path/to/my-repo"
+  }
+});
+
+// Export to Git and push
+await client.callTool({
+  name: "jj_git_export",
+  arguments: { cwd: "/path/to/my-repo" }
+});
+
+await client.callTool({
+  name: "jj_git_push",
+  arguments: {
+    remote: "origin",
+    bookmark: "main",
+    cwd: "/path/to/my-repo"
+  }
 });
 ```
 

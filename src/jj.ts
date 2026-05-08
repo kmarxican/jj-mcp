@@ -267,3 +267,41 @@ export function jjPrev(
   if (amount) args.push(amount.toString());
   return runJj(args, cwd);
 }
+
+export function jjGitFetch(
+  remote?: string,
+  cwd?: string
+): JjResult {
+  const args = ["git", "fetch"];
+  if (remote) args.push(remote);
+  return runJj(args, cwd);
+}
+
+export function jjGitPush(
+  remote?: string,
+  bookmark?: string,
+  cwd?: string
+): JjResult {
+  const args = ["git", "push"];
+  if (remote) args.push(remote);
+  if (bookmark) args.push(bookmark);
+  return runJj(args, cwd);
+}
+
+export function jjGitImport(cwd?: string): JjResult {
+  return runJj(["git", "import"], cwd);
+}
+
+export function jjGitExport(cwd?: string): JjResult {
+  return runJj(["git", "export"], cwd);
+}
+
+export function jjGitClone(
+  url: string,
+  destination?: string,
+  cwd?: string
+): JjResult {
+  const args = ["git", "clone", url];
+  if (destination) args.push(destination);
+  return runJj(args, cwd);
+}
