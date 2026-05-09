@@ -1,19 +1,47 @@
 {
   "name": "jj-mcp",
   "version": "1.0.0",
-  "description": "MCP server for Jujutsu version control",
+  "description": "MCP server for the Jujutsu (jj) version control system — expose jj commands as MCP tools and resources",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
     "jj-mcp": "dist/index.js"
   },
+  "files": [
+    "dist/",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "prepublishOnly": "npm run build"
   },
-  "keywords": ["mcp", "jujutsu", "jj", "version-control"],
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "jujutsu",
+    "jj",
+    "version-control",
+    "vcs",
+    "git",
+    "claude",
+    "ai"
+  ],
+  "author": "Tim Thorpe",
   "license": "MIT",
+  "homepage": "https://github.com/timthorpe/jj-mcp#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/timthorpe/jj-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/timthorpe/jj-mcp/issues"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.4"
   },
