@@ -1,6 +1,6 @@
 {
   "name": "jj-mcp",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "MCP server for the Jujutsu (jj) version control system — expose jj commands as MCP tools and resources",
   "type": "module",
   "main": "dist/index.js",
@@ -34,7 +34,7 @@
   "homepage": "https://github.com/kmarxican/jj-mcp#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/kmarxican/jj-mcp.git"
+    "url": "git+https://github.com/kmarxican/jj-mcp.git"
   },
   "bugs": {
     "url": "https://github.com/kmarxican/jj-mcp/issues"
