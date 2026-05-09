@@ -29,15 +29,15 @@
     "claude",
     "ai"
   ],
-  "author": "Tim Thorpe",
+  "author": "kmarxican",
   "license": "MIT",
-  "homepage": "https://github.com/timthorpe/jj-mcp#readme",
+  "homepage": "https://github.com/kmarxican/jj-mcp#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/timthorpe/jj-mcp.git"
+    "url": "https://github.com/kmarxican/jj-mcp.git"
   },
   "bugs": {
-    "url": "https://github.com/timthorpe/jj-mcp/issues"
+    "url": "https://github.com/kmarxican/jj-mcp/issues"
   },
   "engines": {
     "node": ">=18.0.0"
