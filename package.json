@@ -1,6 +1,6 @@
 {
   "name": "jj-mcp",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "MCP server for the Jujutsu (jj) version control system — expose jj commands as MCP tools and resources",
   "type": "module",
   "main": "dist/index.js",

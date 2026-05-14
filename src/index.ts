@@ -289,8 +289,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request: CallToolRequest)
 
       case "jj_bisect":
         result = jjBisect(
-          args?.good as string | undefined,
-          args?.bad as string | undefined,
+          args?.range as string,
           args?.command as string | undefined,
           cwd
         );

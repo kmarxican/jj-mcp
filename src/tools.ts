@@ -616,24 +616,20 @@ export const tools: Tool[] = [
     inputSchema: {
       type: "object",
       properties: {
-        good: {
+        range: {
           type: "string",
-          description: "Known good revision"
-        },
-        bad: {
-          type: "string",
-          description: "Known bad revision"
+          description: "Revset range to bisect (required, e.g. 'v1.0..main')"
         },
         command: {
           type: "string",
-          description: "Command to test each revision (optional)"
+          description: "Command to run to determine whether the bug is present (optional)"
         },
         cwd: {
           type: "string",
           description: "Working directory (optional)"
         }
       },
-      required: []
+      required: ["range"]
     }
   },
   {

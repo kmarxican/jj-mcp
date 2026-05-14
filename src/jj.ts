@@ -206,7 +206,7 @@ export function jjSquash(
 
 export function jjSplit(
   revset?: string,
-  interactive: boolean = true,
+  interactive: boolean = false,
   cwd?: string
 ): JjResult {
   const args = ["split"];
@@ -273,7 +273,7 @@ export function jjGitFetch(
   cwd?: string
 ): JjResult {
   const args = ["git", "fetch"];
-  if (remote) args.push(remote);
+  if (remote) args.push("--remote", remote);
   return runJj(args, cwd);
 }
 
@@ -283,8 +283,8 @@ export function jjGitPush(
   cwd?: string
 ): JjResult {
   const args = ["git", "push"];
-  if (remote) args.push(remote);
-  if (bookmark) args.push(bookmark);
+  if (remote) args.push("--remote", remote);
+  if (bookmark) args.push("--bookmark", bookmark);
   return runJj(args, cwd);
 }
 
@@ -356,15 +356,12 @@ export function jjConfigSet(
 }
 
 export function jjBisect(
-  good?: string,
-  bad?: string,
+  range: string,
   command?: string,
   cwd?: string
 ): JjResult {
-  const args = ["bisect"];
-  if (good) args.push("--good", good);
-  if (bad) args.push("--bad", bad);
-  if (command) args.push("--script", command);
+  const args = ["bisect", "run", "--range", range];
+  if (command) args.push("--", command);
   return runJj(args, cwd);
 }
 
@@ -398,16 +395,15 @@ export function jjSparse(
   list?: boolean,
   cwd?: string
 ): JjResult {
-  const args = ["sparse"];
   if (list) {
-    args.push("--list");
-  } else {
-    if (add && add.length > 0) {
-      args.push("--add", ...add);
-    }
-    if (remove && remove.length > 0) {
-      args.push("--remove", ...remove);
-    }
+    return runJj(["sparse", "list"], cwd);
+  }
+  const args = ["sparse", "set"];
+  if (add && add.length > 0) {
+    for (const pat of add) args.push("--add", pat);
+  }
+  if (remove && remove.length > 0) {
+    for (const pat of remove) args.push("--remove", pat);
   }
   return runJj(args, cwd);
 }
