@@ -100,7 +100,7 @@ For a local build, point `command` at the compiled binary instead:
 |------|-------------|
 | `jj_obslog` | Obslog for a revision (mutation history) |
 | `jj_op_log` | Operation log |
-| `jj_bisect` | Binary search for a regression (`range` required, e.g. `v1.0..main`) |
+| `jj_bisect` | Binary search for regressions, e.g. `jj_bisect({range: "v1.0..main"})` |
 
 ### Files & Tags
 

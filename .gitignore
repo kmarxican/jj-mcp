@@ -37,3 +37,6 @@ logs/
 *.pid
 *.seed
 *.pid.lock
+archive/
+*.tgz
+.eslintcache

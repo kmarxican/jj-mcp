@@ -8,15 +8,15 @@
 - `npm run build` — compile TypeScript (`tsc`). Output goes to `dist/` (gitignored).
 - `npm run dev` — `tsc --watch`.
 - `npm start` — run compiled server (`node dist/index.js`).
-- **No tests, linter, or formatter are configured.**
+- **Tests, linter, and formatter are configured** (Vitest, ESLint, Prettier).
 - `npm publish` triggers `prepublishOnly` which runs `npm run build` automatically.
 
 ## Architecture
 - ESM project (`"type": "module"`, `Node16` resolution).
 - Entry: `src/index.ts` → `dist/index.js`. The source file includes a `#!/usr/bin/env node` shebang for the CLI binary (`bin.jj-mcp` in `package.json`).
 - MCP stdio server wrapping the `jj` CLI via synchronous `child_process.spawnSync`.
-- Tool definitions in `src/tools.ts`; command wrappers in `src/jj.ts`.
-- **Adding a new tool requires changes in BOTH `src/tools.ts` (schema) and `src/index.ts` (handler switch case).**
+- Tool definitions in `src/tools/core.ts`, `src/tools/git.ts`, and `src/tools/advanced.ts`; command wrappers in `src/jj.ts`.
+- **Adding a new tool requires changes in BOTH the tool schema (`src/tools/`) and the handler switch case (`src/handlers/tools.ts`).**
 
 ## Runtime Requirements
 - `jj` CLI must be installed and available in `PATH`.
