@@ -1,40 +1,27 @@
 # Jujutsu MCP Server
 
-A Model Context Protocol (MCP) server for the [Jujutsu](https://github.com/jj-vcs/jj) version control system.
+A Model Context Protocol (MCP) server for the [Jujutsu](https://github.com/jj-vcs/jj) version control system. Exposes `jj` commands as MCP tools so AI assistants can read and manipulate jj repositories directly.
+
+## Requirements
+
+- Node.js 18+
+- `jj` CLI 0.25+ installed and in PATH
 
 ## Installation
-
-### Option 1: Global NPM Install (Recommended)
 
 ```bash
 npm install -g jj-mcp
 ```
 
-The `jj-mcp` command will be available system-wide.
-
-### Option 2: Local Install
-
-```bash
-git clone <repo-url>
-cd jj-mcp
-npm install
-npm run build
-```
-
-### Option 3: NPX (No Install)
+Or run without installing:
 
 ```bash
 npx jj-mcp
 ```
 
-## Usage with MCP Clients
+## Client Configuration
 
-### Claude Desktop
-
-Config location:
-- **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
-- **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
-- **Linux**: `~/.config/Claude/claude_desktop_config.json`
+Add to your MCP client config. All clients use the same JSON shape:
 
 ```json
 {
@@ -46,7 +33,14 @@ Config location:
 }
 ```
 
-Or with local install:
+| Client | Config file |
+|--------|-------------|
+| **Claude Desktop** | `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) |
+| **Windsurf** | `~/.codeium/windsurf/mcp_config.json` |
+| **Cursor** | `~/.cursor/mcp.json` |
+| **Cline** | MCP settings in VS Code extension |
+
+For a local build, point `command` at the compiled binary instead:
 
 ```json
 {
@@ -59,337 +53,115 @@ Or with local install:
 }
 ```
 
-### Cursor
-
-Add to Cursor MCP settings (Settings > Features > MCP Servers):
-
-```json
-{
-  "mcpServers": {
-    "jj": {
-      "command": "jj-mcp"
-    }
-  }
-}
-```
-
-Or add directly to `~/.cursor/mcp.json`.
-
-### Cline (VS Code Extension)
-
-Add to Cline MCP settings:
-
-```json
-{
-  "mcpServers": [
-    {
-      "name": "jj",
-      "command": "jj-mcp"
-    }
-  ]
-}
-```
-
-### OpenCode
-
-Add to `~/.opencode/mcp_config.json`:
-
-```json
-{
-  "mcpServers": {
-    "jj-mcp": {
-      "type": "local",
-      "command": ["npx", "-y", "jj-mcp"],
-      "enabled": true
-    }
-  }
-}
-```
-
-### Custom MCP Clients
-
-For any MCP client, configure with:
-
-| Setting | Value |
-|---------|-------|
-| Transport | `stdio` |
-| Command | `jj-mcp` (or `node /path/to/dist/index.js`) |
-| Environment | Optional `cwd` parameter per tool call |
-
-Example client connection:
-
-```javascript
-import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
-
-const transport = new StdioClientTransport({
-  command: "jj-mcp",
-});
-
-const client = new Client({ name: "my-client", version: "1.0.0" });
-await client.connect(transport);
-
-// List available tools
-const tools = await client.listTools();
-```
-
 ## Available Tools
+
+### Core
 
 | Tool | Description |
 |------|-------------|
 | `jj_status` | Working copy status |
-| `jj_log` | Commit history with revset support |
+| `jj_log` | Commit history (supports revset expressions) |
 | `jj_diff` | Show differences |
 | `jj_describe` | Edit commit message |
 | `jj_commit` | Create commit from working copy |
 | `jj_new` | Create new empty commit |
 | `jj_abandon` | Remove a commit |
 | `jj_rebase` | Rebase commits |
-| `jj_bookmark_list` | List bookmarks |
-| `jj_bookmark_create` | Create bookmark |
-| `jj_bookmark_delete` | Delete bookmark |
 | `jj_squash` | Combine commits |
 | `jj_split` | Split a commit |
 | `jj_undo` | Undo last operation |
 | `jj_redo` | Redo undone operation |
-| `jj_restore` | Restore files from revision |
-| `jj_edit` | Edit a specific revision |
+| `jj_restore` | Restore files from a revision |
+| `jj_edit` | Set working copy to a revision |
 | `jj_next` | Move to next child revision |
 | `jj_prev` | Move to previous parent revision |
-| `jj_git_fetch` | Fetch changes from Git remotes |
-| `jj_git_push` | Push changes to Git remotes |
-| `jj_git_import` | Import changes from Git into jj |
+
+### Bookmarks
+
+| Tool | Description |
+|------|-------------|
+| `jj_bookmark_list` | List bookmarks |
+| `jj_bookmark_create` | Create bookmark |
+| `jj_bookmark_delete` | Delete bookmark |
+
+### Git Integration
+
+| Tool | Description |
+|------|-------------|
+| `jj_git_fetch` | Fetch from a Git remote |
+| `jj_git_push` | Push to a Git remote |
+| `jj_git_import` | Import Git refs into jj |
 | `jj_git_export` | Export jj changes to Git |
-| `jj_git_clone` | Clone Git repository and initialize jj |
-| `jj_obslog` | Show operation log (history of mutations) |
-| `jj_op_log` | Show detailed operation log |
-| `jj_workspace_list` | List all workspaces |
-| `jj_workspace_add` | Add new workspace |
-| `jj_config_get` | Get configuration value |
-| `jj_config_set` | Set configuration value |
-| `jj_bisect` | Binary search for regressions |
-| `jj_file_show` | Show file contents at revision |
-| `jj_tag_list` | List all tags |
-| `jj_tag_create` | Create new tag |
+| `jj_git_clone` | Clone a Git repo and initialize jj |
+
+### Operations & History
+
+| Tool | Description |
+|------|-------------|
+| `jj_obslog` | Obslog for a revision (mutation history) |
+| `jj_op_log` | Operation log |
+| `jj_bisect` | Binary search for a regression (`range` required, e.g. `v1.0..main`) |
+
+### Files & Tags
+
+| Tool | Description |
+|------|-------------|
+| `jj_file_show` | Show file contents at a revision |
+| `jj_tag_list` | List tags |
+| `jj_tag_create` | Create a tag |
+
+### Workspaces & Config
+
+| Tool | Description |
+|------|-------------|
+| `jj_workspace_list` | List workspaces |
+| `jj_workspace_add` | Add a workspace |
+| `jj_config_get` | Get a config value |
+| `jj_config_set` | Set a config value |
 | `jj_sparse` | Manage sparse checkout patterns |
+| `jj_init` | Initialize a new jj repo |
+| `jj_sanity_check` | Verify jj is installed and repo is valid |
 
 ## Available Resources
 
-Resources provide read-only access to repository state without explicit tool calls.
+Resources provide read-only repository state without a tool call:
 
-| Resource URI | Description | Parameters |
-|--------------|-------------|------------|
-| `jj://status` | Repository status | `cwd` (optional) |
-| `jj://log/recent` | Recent commits | `cwd` (optional), `limit` (default: 10) |
-| `jj://bookmarks` | List all bookmarks | `cwd` (optional) |
-| `jj://config` | Repository configuration | `cwd` (optional) |
+| URI | Description |
+|-----|-------------|
+| `jj://status` | Working copy status |
+| `jj://log/recent` | Recent commits (default limit: 10) |
+| `jj://bookmarks` | All bookmarks |
+| `jj://config` | Repository configuration |
 
-### Using Resources
+All URIs accept a `cwd` query parameter, and `jj://log/recent` also accepts `limit`:
 
-Resources can be read with URL parameters:
-
-```javascript
-// Read status with custom working directory
-const { contents } = await client.readResource({
-  uri: "jj://status?cwd=/path/to/repo"
-});
-
-// Read recent commits with custom limit
-const { contents } = await client.readResource({
-  uri: "jj://log/recent?cwd=/path/to/repo&limit=20"
-});
 ```
-
-## Git Integration
-
-The jj-mcp server provides Git integration tools for colocated repositories (where jj and Git share the same directory).
-
-### Git Tools
-
-| Tool | Description | Example |
-|------|-------------|---------|
-| `jj_git_fetch` | Fetch from Git remotes | `jj_git_fetch({remote: "origin"})` |
-| `jj_git_push` | Push to Git remotes | `jj_git_push({remote: "origin", bookmark: "main"})` |
-| `jj_git_import` | Import Git changes into jj | `jj_git_import()` |
-| `jj_git_export` | Export jj changes to Git | `jj_git_export()` |
-| `jj_git_clone` | Clone and initialize jj | `jj_git_clone({url: "https://github.com/user/repo.git"})` |
-
-### Git Workflow Example
-
-```javascript
-// Clone a repository with jj
-await client.callTool({
-  name: "jj_git_clone",
-  arguments: {
-    url: "https://github.com/user/repo.git",
-    destination: "my-repo"
-  }
-});
-
-// Fetch latest changes
-await client.callTool({
-  name: "jj_git_fetch",
-  arguments: { cwd: "/path/to/my-repo" }
-});
-
-// Import Git changes into jj
-await client.callTool({
-  name: "jj_git_import", 
-  arguments: { cwd: "/path/to/my-repo" }
-});
-
-// Make changes with jj tools...
-await client.callTool({
-  name: "jj_commit",
-  arguments: {
-    message: "My changes",
-    cwd: "/path/to/my-repo"
-  }
-});
-
-// Export to Git and push
-await client.callTool({
-  name: "jj_git_export",
-  arguments: { cwd: "/path/to/my-repo" }
-});
-
-await client.callTool({
-  name: "jj_git_push",
-  arguments: {
-    remote: "origin",
-    bookmark: "main",
-    cwd: "/path/to/my-repo"
-  }
-});
-```
-
-## Advanced Tools
-
-The jj-mcp server provides advanced tools for repository management, debugging, and configuration.
-
-### Operation History
-
-| Tool | Description | Example |
-|------|-------------|---------|
-| `jj_obslog` | Show operation log (history of mutations) | `jj_obslog({limit: 10, revset: "@"})` |
-| `jj_op_log` | Show detailed operation log | `jj_op_log({limit: 5})` |
-
-### Workspace Management
-
-| Tool | Description | Example |
-|------|-------------|---------|
-| `jj_workspace_list` | List all workspaces | `jj_workspace_list()` |
-| `jj_workspace_add` | Add new workspace | `jj_workspace_add({name: "feature-x", revision: "main"})` |
-
-### Configuration
-
-| Tool | Description | Example |
-|------|-------------|---------|
-| `jj_config_get` | Get configuration value | `jj_config_get({name: "user.name"})` |
-| `jj_config_set` | Set configuration value | `jj_config_set({name: "user.email", value: "user@example.com"})` |
-
-### Debugging & Analysis
-
-| Tool | Description | Example |
-|------|-------------|---------|
-| `jj_bisect` | Binary search for regressions | `jj_bisect({good: "v1.0", bad: "main"})` |
-| `jj_file_show` | Show file contents at revision | `jj_file_show({path: "README.md", revision: "v1.0"})` |
-
-### Tags & Sparse Checkout
-
-| Tool | Description | Example |
-|------|-------------|---------|
-| `jj_tag_list` | List all tags | `jj_tag_list()` |
-| `jj_tag_create` | Create new tag | `jj_tag_create({name: "v1.0", revision: "main"})` |
-| `jj_sparse` | Manage sparse checkout patterns | `jj_sparse({add: ["src/*"], list: true})` |
-
-### Advanced Workflow Example
-
-```javascript
-// Analyze recent operations
-const obslog = await client.callTool({
-  name: "jj_obslog",
-  arguments: { limit: 5, cwd: "/path/to/repo" }
-});
-
-// Get current configuration
-const userName = await client.callTool({
-  name: "jj_config_get",
-  arguments: { name: "user.name", cwd: "/path/to/repo" }
-});
-
-// Show file at previous revision
-const oldFile = await client.callTool({
-  name: "jj_file_show",
-  arguments: {
-    path: "config.json",
-    revision: "v1.0",
-    cwd: "/path/to/repo"
-  }
-});
-
-// Create a new workspace for feature development
-await client.callTool({
-  name: "jj_workspace_add",
-  arguments: {
-    name: "feature-branch",
-    revision: "main",
-    cwd: "/path/to/repo"
-  }
-});
-
-// Tag current state
-await client.callTool({
-  name: "jj_tag_create",
-  arguments: {
-    name: "checkpoint",
-    cwd: "/path/to/repo"
-  }
-});
+jj://log/recent?cwd=/path/to/repo&limit=20
 ```
 
 ## Revset Expressions
 
-Jujutsu supports powerful revision selection:
+All tools that accept a `revset` parameter support jj's revision syntax:
 
-- `@` - Working copy
-- `@-` - Parent of working copy
-- `main` - Bookmark named "main"
-- `::main` - Ancestors of main
-- `main..@` - Commits between main and working copy
-
-## Environment Variables
-
-| Variable | Description |
-|----------|-------------|
-| `JJ MCP_CWD` | Default working directory for all operations |
-| `PATH` | Must include `jj` binary location |
-
-Per-invocation `cwd` can be passed via tool arguments to override.
-
-## Requirements
-
-- Node.js 18+
-- `jj` CLI 0.15+ installed and in PATH
+| Expression | Meaning |
+|------------|---------|
+| `@` | Working copy |
+| `@-` | Parent of working copy |
+| `main` | Bookmark named "main" |
+| `::main` | All ancestors of main |
+| `main..@` | Commits between main and working copy |
 
 ## Troubleshooting
 
-### "jj command not found"
-
-Ensure `jj` is installed and in your PATH:
+**`jj command not found`** — ensure `jj` is on your PATH:
 ```bash
-which jj
-jj --version
+which jj && jj --version
 ```
 
-### Connection refused
-
-Verify the server runs standalone:
+**Verify the server**:
 ```bash
-jj-mcp
-# Should start and wait for JSON-RPC messages on stdin
+jj-mcp --check   # checks jj is found and cwd is a jj repo
+jj-mcp --version
 ```
 
-### Large repositories
-
-The server uses a 10MB buffer for command output. For very large diffs or logs, use the `limit` parameter in `jj_log`.
+**Large output** — the server uses a 10 MB buffer. For very large diffs or logs, use the `limit` parameter.
