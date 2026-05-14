@@ -56,7 +56,7 @@ import {
 const server = new Server(
   {
     name: "jj-mcp",
-    version: "1.0.3",
+    version: "1.0.4",
   },
   {
     capabilities: {
@@ -489,7 +489,7 @@ async function main() {
   const args = process.argv.slice(2);
 
   if (args.includes("--version")) {
-    console.log("jj-mcp v1.0.3");
+    console.log("jj-mcp v1.0.4");
     process.exit(0);
   }
 
