@@ -90,6 +90,22 @@ Add to Cline MCP settings:
 }
 ```
 
+### OpenCode
+
+Add to `~/.opencode/mcp_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "jj-mcp": {
+      "type": "local",
+      "command": ["npx", "-y", "jj-mcp"],
+      "enabled": true
+    }
+  }
+}
+```
+
 ### Custom MCP Clients
 
 For any MCP client, configure with:
