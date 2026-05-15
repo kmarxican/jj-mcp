@@ -18,7 +18,7 @@ import { handleListResources, handleReadResource } from "./handlers/resources.js
 const server = new Server(
   {
     name: "jj-mcp",
-    version: "1.0.4",
+    version: "1.0.5",
   },
   {
     capabilities: {
@@ -37,7 +37,7 @@ async function main(): Promise<void> {
   const args = process.argv.slice(2);
 
   if (args.includes("--version")) {
-    console.log("jj-mcp v1.0.4");
+    console.log("jj-mcp v1.0.5");
     process.exit(0);
   }
 

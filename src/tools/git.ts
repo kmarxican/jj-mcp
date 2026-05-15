@@ -155,6 +155,10 @@ export const gitTools: Tool[] = [
           type: "string",
           description: "Name for the new workspace",
         },
+        destination: {
+          type: "string",
+          description: "Where to create the new workspace (required)",
+        },
         revision: {
           type: "string",
           description: "Revision for the new workspace (default: working copy @)",
@@ -164,7 +168,7 @@ export const gitTools: Tool[] = [
           description: "Working directory (optional)",
         },
       },
-      required: ["name"],
+      required: ["name", "destination"],
     },
   },
   {
@@ -199,6 +203,11 @@ export const gitTools: Tool[] = [
           type: "string",
           description: "Configuration value (required)",
         },
+        scope: {
+          type: "string",
+          enum: ["user", "repo", "workspace"],
+          description: "Config scope (default: repo)",
+        },
         cwd: {
           type: "string",
           description: "Working directory (optional)",
@@ -219,14 +228,14 @@ export const gitTools: Tool[] = [
         },
         command: {
           type: "string",
-          description: "Command to run to determine whether the bug is present (optional)",
+          description: "Command to run to determine whether the bug is present (required)",
         },
         cwd: {
           type: "string",
           description: "Working directory (optional)",
         },
       },
-      required: ["range"],
+      required: ["range", "command"],
     },
   },
   {

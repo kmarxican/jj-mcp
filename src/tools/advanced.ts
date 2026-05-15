@@ -82,14 +82,10 @@ export const advancedTools: Tool[] = [
   },
   {
     name: "jj_undo",
-    description: "Undo the last operation (jj undo). Use --from to undo to a specific operation.",
+    description: "Undo the last operation (jj undo).",
     inputSchema: {
       type: "object",
       properties: {
-        from: {
-          type: "number",
-          description: "Undo back to this operation number (optional)",
-        },
         cwd: {
           type: "string",
           description: "Working directory (optional)",

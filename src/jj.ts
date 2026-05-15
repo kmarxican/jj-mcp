@@ -34,6 +34,7 @@ export function jjInit(cwd: string = process.cwd()): JjResult {
     const result = spawnSync("jj", ["git", "init", "--colocate"], {
       cwd,
       encoding: "utf8",
+      env: { ...process.env, EDITOR: "true", VISUAL: "true" },
     });
     if (result.status === 0) {
       return {
@@ -70,9 +71,20 @@ export function runJj(args: string[], cwd?: string, encoding: BufferEncoding = "
       cwd,
       encoding,
       maxBuffer: 10 * 1024 * 1024, // 10MB buffer for large repos
+      timeout: 30000, // 30s timeout to prevent indefinite hangs on interactive commands
+      env: { ...process.env, EDITOR: "true", VISUAL: "true" },
       windowsHide: true, // Hide console window on Windows
       shell: false,
     });
+
+    if (result.error) {
+      return {
+        success: false,
+        error: `Command failed: ${result.error.message}`,
+        stdout: result.stdout?.toString().trim() ?? "",
+        stderr: result.stderr?.toString().trim() ?? "",
+      };
+    }
 
     const stdout = result.stdout?.toString() ?? "";
     const stderr = result.stderr?.toString() ?? "";
@@ -183,10 +195,8 @@ export function jjSplit(revset?: string, interactive: boolean = false, cwd?: str
   return runJj(args, cwd);
 }
 
-export function jjUndo(from?: number, cwd?: string): JjResult {
-  const args = ["undo"];
-  if (from !== undefined) args.push("--from", from.toString());
-  return runJj(args, cwd);
+export function jjUndo(cwd?: string): JjResult {
+  return runJj(["undo"], cwd);
 }
 
 export function jjRedo(cwd?: string): JjResult {
@@ -263,8 +273,8 @@ export function jjWorkspaceList(cwd?: string): JjResult {
   return runJj(["workspace", "list"], cwd);
 }
 
-export function jjWorkspaceAdd(name: string, revision?: string, cwd?: string): JjResult {
-  const args = ["workspace", "add", "--name", name];
+export function jjWorkspaceAdd(name: string, destination: string, revision?: string, cwd?: string): JjResult {
+  const args = ["workspace", "add", "--name", name, destination];
   if (revision) args.push("-r", revision);
   return runJj(args, cwd);
 }
@@ -273,8 +283,8 @@ export function jjConfigGet(name: string, cwd?: string): JjResult {
   return runJj(["config", "get", name], cwd);
 }
 
-export function jjConfigSet(name: string, value: string, cwd?: string): JjResult {
-  return runJj(["config", "set", name, value], cwd);
+export function jjConfigSet(name: string, value: string, scope: "user" | "repo" | "workspace" = "repo", cwd?: string): JjResult {
+  return runJj(["config", "set", `--${scope}`, name, value], cwd);
 }
 
 export function jjBisect(range: string, command?: string, cwd?: string): JjResult {
@@ -294,7 +304,7 @@ export function jjTagList(cwd?: string): JjResult {
 }
 
 export function jjTagCreate(name: string, revision?: string, cwd?: string): JjResult {
-  const args = ["tag", "create", name];
+  const args = ["tag", "set", name];
   if (revision) args.push("-r", revision);
   return runJj(args, cwd);
 }

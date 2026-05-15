@@ -158,7 +158,7 @@ export function handleToolRequest(request: CallToolRequest): {
         break;
 
       case "jj_undo":
-        result = jjUndo(getNumberArg(args, "from"), cwd);
+        result = jjUndo(cwd);
         break;
 
       case "jj_redo":
@@ -225,6 +225,7 @@ export function handleToolRequest(request: CallToolRequest): {
       case "jj_workspace_add":
         result = jjWorkspaceAdd(
           getStringArg(args, "name") ?? "",
+          getStringArg(args, "destination") ?? "",
           getStringArg(args, "revision"),
           cwd
         );
@@ -234,13 +235,20 @@ export function handleToolRequest(request: CallToolRequest): {
         result = jjConfigGet(getStringArg(args, "name") ?? "", cwd);
         break;
 
-      case "jj_config_set":
+      case "jj_config_set": {
+        const rawScope = getStringArg(args, "scope");
+        const scope: "user" | "repo" | "workspace" | undefined =
+          rawScope === "user" || rawScope === "repo" || rawScope === "workspace"
+            ? rawScope
+            : undefined;
         result = jjConfigSet(
           getStringArg(args, "name") ?? "",
           getStringArg(args, "value") ?? "",
+          scope,
           cwd
         );
         break;
+      }
 
       case "jj_bisect":
         result = jjBisect(getStringArg(args, "range") ?? "", getStringArg(args, "command"), cwd);
